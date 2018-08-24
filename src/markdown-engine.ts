@@ -1633,7 +1633,13 @@ sidebarTOCBtn.addEventListener('click', function(event) {
     const info = await utility.tempOpen({ prefix: "mume", suffix: ".html" });
     await utility.writeFile(info.fd, html);
 
-    const browser = await puppeteer.launch();
+    const isRoot = process.getuid && process.getuid() === 0;
+    const launchOptions = isRoot
+      ? {
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        }
+      : {};
+    const browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
     const loadPath =
       "file:///" +
